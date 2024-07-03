@@ -3,6 +3,7 @@ package com.finance.expensemanager.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.finance.expensemanager.model.entity.Transaction;
 import com.finance.expensemanager.repository.TransactionRepository;
 import com.finance.expensemanager.service.TransactionService;
 
+@CrossOrigin(origins= {"*"}, maxAge = 4800)
 @RestController
 public class TransactionController {
 	@Autowired
@@ -46,7 +48,7 @@ public class TransactionController {
 	}
 
 	@DeleteMapping("/transactions/{id}")
-	public String deleteTransaction(@PathVariable long id) {
+	public int deleteTransaction(@PathVariable long id) {
 		return transactionService.deleteTransaction(id);
 	}
 }

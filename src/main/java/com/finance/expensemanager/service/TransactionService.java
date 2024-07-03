@@ -55,10 +55,10 @@ public class TransactionService {
 	}
 
 	@Transactional
-	public String deleteTransaction(long id) {
+	public int deleteTransaction(long id) {
 		Transaction transaction = transactionRepository.findById(id)
 				.orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
 		transactionRepository.deleteById(id);
-		return "deleted";
+		return 1;
 	}
 }

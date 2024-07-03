@@ -16,4 +16,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleTransactionNotFoundException(TransactionNotFoundException ex) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(EntityValidationException.class)
+	public ResponseEntity<String> handleDuplicateUSernameException(EntityValidationException ex) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
 }
