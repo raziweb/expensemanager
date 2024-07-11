@@ -18,4 +18,6 @@ public class TransactionDTO {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate date;
 	private long categoryId;
+	
+	private int userId;
 }

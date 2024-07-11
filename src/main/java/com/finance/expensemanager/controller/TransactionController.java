@@ -39,7 +39,7 @@ public class TransactionController {
 
 	@GetMapping("/transactions")
 	public List<Transaction> getAllTransactions() {
-		return transactionRepository.findAll();
+		return transactionService.getAllTransactions();
 	}
 
 	@PutMapping("/transactions/{id}")

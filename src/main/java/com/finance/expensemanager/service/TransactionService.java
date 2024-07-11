@@ -1,6 +1,12 @@
 package com.finance.expensemanager.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.finance.expensemanager.exception.CategoryNotFoundException;
@@ -8,8 +14,10 @@ import com.finance.expensemanager.exception.TransactionNotFoundException;
 import com.finance.expensemanager.model.dto.TransactionDTO;
 import com.finance.expensemanager.model.entity.Category;
 import com.finance.expensemanager.model.entity.Transaction;
+import com.finance.expensemanager.model.entity.User;
 import com.finance.expensemanager.repository.CategoryRepository;
 import com.finance.expensemanager.repository.TransactionRepository;
+import com.finance.expensemanager.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +25,9 @@ import jakarta.transaction.Transactional;
 public class TransactionService {
 	@Autowired
 	private TransactionRepository transactionRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private CategoryRepository categoryRepository;
@@ -25,6 +36,9 @@ public class TransactionService {
 	public Transaction createTransaction(TransactionDTO transactionDTO) {
 		Category category = categoryRepository.findById(transactionDTO.getCategoryId())
 				.orElseThrow(() -> new CategoryNotFoundException("Category Not found"));
+		
+		User user = userRepository.findById(transactionDTO.getUserId())
+				.orElseThrow(() -> new BadCredentialsException("User not found"));
 
 		System.out.println(category.toString());
 
@@ -33,6 +47,7 @@ public class TransactionService {
 		transaction.setDate(transactionDTO.getDate());
 		transaction.setNote(transactionDTO.getNote());
 		transaction.setCategory(category);
+		transaction.setUser(user);
 
 		return transactionRepository.save(transaction);
 	}
@@ -46,7 +61,7 @@ public class TransactionService {
 					.orElseThrow(() -> new CategoryNotFoundException("Category Not found"));
 
 			transaction.setCategory(category);
-		}
+		}	
 		transaction.setAmount(transactionDTO.getAmount());
 		transaction.setDate(transactionDTO.getDate());
 		transaction.setNote(transactionDTO.getNote());
@@ -61,4 +76,11 @@ public class TransactionService {
 		transactionRepository.deleteById(id);
 		return 1;
 	}
-}
+	
+	public List<Transaction> getAllTransactions() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		User user = userRepository.findByUsername(userDetails.getUsername());
+		return transactionRepository.findByUserId(user.getId());
+	}
+} 

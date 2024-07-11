@@ -5,13 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.finance.expensemanager.auth.CustomUserDetailsService;
 import com.finance.expensemanager.auth.JwtUtil;
 import com.finance.expensemanager.model.dto.AuthRequest;
 import com.finance.expensemanager.model.dto.AuthResponse;
@@ -19,45 +18,53 @@ import com.finance.expensemanager.model.entity.User;
 import com.finance.expensemanager.repository.UserRepository;
 import com.finance.expensemanager.service.UserService;
 
+@CrossOrigin(origins= {"*"}, maxAge = 4800)
 @RestController
 public class AuthController {
 	@Autowired
 	private UserService userService;
-	
+
+	@Autowired
+	private UserRepository userRepository;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
-    private AuthenticationManager authenticationManager;
+	private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-	
 	@PostMapping("/register")
-	public User registerUser(@RequestBody User user) {
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		return userService.registerUser(user);
+	public ResponseEntity<AuthResponse> registerUser(@RequestBody User request) {
+		request.setPassword(passwordEncoder.encode(request.getPassword()));
+		User user = userService.registerUser(request);
+		final String jwt = jwtUtil.generateToken(user);
+		AuthResponse response = new AuthResponse();
+		response.setJwt(jwt);
+		response.setUserId(user.getId());
+		response.setUsername(user.getUsername());
+		return ResponseEntity.ok(response);
 	}
-	
+
 	@PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) throws Exception {
+	public ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody AuthRequest request)
+			throws Exception {
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
-        }
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					request.getUsername(), request.getPassword()));
+		} catch (BadCredentialsException e) {
+			throw new BadCredentialsException("Incorrect username or password", e);
+		}
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new AuthResponse(jwt));
-    }
+		User user = userRepository.findByUsername(request.getUsername());
+		final String jwt = jwtUtil.generateToken(user);
+		AuthResponse response = new AuthResponse();
+		response.setJwt(jwt);
+		response.setUserId(user.getId());
+		response.setUsername(user.getUsername());
+		return ResponseEntity.ok(response);
+	}
 }

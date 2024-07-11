@@ -32,4 +32,8 @@ public class Transaction {
 	@ManyToOne
 	@JoinColumn(name = "category", referencedColumnName = "id")
 	private Category category;
+	
+	@ManyToOne
+	@JoinColumn(name = "user", referencedColumnName = "id")
+	private User user;
 }
