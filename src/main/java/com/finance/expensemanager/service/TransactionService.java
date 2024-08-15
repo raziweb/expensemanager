@@ -1,5 +1,6 @@
 package com.finance.expensemanager.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,25 @@ public class TransactionService {
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 		User user = userRepository.findByUsername(userDetails.getUsername());
 		return transactionRepository.findByUserId(user.getId());
+	}
+	
+	public List<Transaction> getCurrentMonthTransactions() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		User user = userRepository.findByUsername(userDetails.getUsername());
+		
+		LocalDate currentDate = LocalDate.now();
+        int currentMonth = currentDate.getMonthValue();  
+        int currentYear = currentDate.getYear();
+        
+        return transactionRepository.getCurrentMonthTransactions(user.getId(), currentMonth, currentYear);
+	}
+	
+	public List<Transaction> getTransactionBetweenDates(String fromDate, String toDate) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		User user = userRepository.findByUsername(userDetails.getUsername());
+		
+		return transactionRepository.getTransactionBetweenDates(user.getId(), fromDate, toDate);
 	}
 } 

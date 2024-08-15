@@ -41,6 +41,11 @@ public class TransactionController {
 	public List<Transaction> getAllTransactions() {
 		return transactionService.getAllTransactions();
 	}
+	
+	@GetMapping("/hometransactions") 
+	public List<Transaction> getCurrentMonthTransactions() {
+		return transactionService.getCurrentMonthTransactions();
+	}
 
 	@PutMapping("/transactions/{id}")
 	public Transaction editTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
@@ -50,5 +55,10 @@ public class TransactionController {
 	@DeleteMapping("/transactions/{id}")
 	public int deleteTransaction(@PathVariable long id) {
 		return transactionService.deleteTransaction(id);
+	}
+	
+	@GetMapping("/transactions/{fromDate}/to/{toDate}")
+	public List<Transaction> getTransactionBetweenDates(@PathVariable String fromDate, @PathVariable String toDate){
+		return transactionService.getTransactionBetweenDates(fromDate, toDate);
 	}
 }

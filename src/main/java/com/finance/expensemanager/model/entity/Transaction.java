@@ -3,6 +3,7 @@ package com.finance.expensemanager.model.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ public class Transaction {
 	@JoinColumn(name = "category", referencedColumnName = "id")
 	private Category category;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "user", referencedColumnName = "id")
 	private User user;
