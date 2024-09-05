@@ -17,4 +17,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 	
 	@Query(value = "SELECT * FROM transaction WHERE user = ?1 AND date BETWEEN ?2 AND ?3 ORDER BY date", nativeQuery = true)
 	List<Transaction> getTransactionBetweenDates(int userId, String fromDate, String toDate);
+	
+	@Query(value = "SELECT * FROM transaction WHERE user = ?1 AND YEAR(date) = ?2 AND MONTH(date) = ?3 ORDER BY date", nativeQuery = true)
+	List<Transaction> getTransactionsForGivenMonth(int userId, int year, int month);
 }

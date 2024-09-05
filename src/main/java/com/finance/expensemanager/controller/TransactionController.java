@@ -61,4 +61,9 @@ public class TransactionController {
 	public List<Transaction> getTransactionBetweenDates(@PathVariable String fromDate, @PathVariable String toDate){
 		return transactionService.getTransactionBetweenDates(fromDate, toDate);
 	}
+	
+	@GetMapping("/transactions/{year}/{month}")
+	public List<Transaction> getTransactionsForGivenMonth(@PathVariable int year, @PathVariable int month) {
+		return transactionService.getTransactionsForGivenMonth(year, month);
+	}
 }

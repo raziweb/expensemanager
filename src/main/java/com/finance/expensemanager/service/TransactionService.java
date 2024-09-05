@@ -1,6 +1,7 @@
 package com.finance.expensemanager.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,5 +104,13 @@ public class TransactionService {
 		User user = userRepository.findByUsername(userDetails.getUsername());
 		
 		return transactionRepository.getTransactionBetweenDates(user.getId(), fromDate, toDate);
+	}
+	
+	public List<Transaction> getTransactionsForGivenMonth(int year, int month) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		User user = userRepository.findByUsername(userDetails.getUsername());
+		
+		return transactionRepository.getTransactionsForGivenMonth(user.getId(), year, month);
 	}
 } 
