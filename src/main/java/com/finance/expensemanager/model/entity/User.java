@@ -33,7 +33,7 @@ public class User implements UserDetails {
 	private String username;
 	
 	@Column(nullable = false)
-	@JsonIgnore
+//	@JsonIgnore
 	private String password;
 
 	@Override

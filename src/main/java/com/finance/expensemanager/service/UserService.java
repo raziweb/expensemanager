@@ -13,9 +13,14 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private CategoryService categoryService;
+	
 	public User registerUser(User user) {
 		try {
-			return userRepository.save(user);
+			User newUser = userRepository.save(user);
+			categoryService.addDefaultCategories(newUser);
+			return newUser;
 		}
 		catch(DataIntegrityViolationException e) {
 			throw new EntityValidationException("Duplicate value for username");
