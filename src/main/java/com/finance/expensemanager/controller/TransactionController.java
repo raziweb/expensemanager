@@ -3,6 +3,9 @@ package com.finance.expensemanager.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,5 +68,16 @@ public class TransactionController {
 	@GetMapping("/transactions/{year}/{month}")
 	public List<Transaction> getTransactionsForGivenMonth(@PathVariable int year, @PathVariable int month) {
 		return transactionService.getTransactionsForGivenMonth(year, month);
+	}
+
+	@GetMapping(".well-known/pki-validation/65D017C3AA1E5E4652EB6FD5ABD23E73.txt")
+	public ResponseEntity<String> getVerifyFile() {
+		String fileContent = "790514BFB7824EE50D2A9310B0CF38C10D8286B1FE3C0ACC8304B599A36E0A52\n" +
+				"comodoca.com\n" +
+				"48ca672d30bd6fa";
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, "text/plain");
+		return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
 	}
 }

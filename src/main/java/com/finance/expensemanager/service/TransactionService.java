@@ -42,7 +42,7 @@ public class TransactionService {
 		User user = userRepository.findById(transactionDTO.getUserId())
 				.orElseThrow(() -> new BadCredentialsException("User not found"));
 
-		System.out.println(category.toString());
+//		System.out.println(category.toString());
 
 		Transaction transaction = new Transaction();
 		transaction.setAmount(transactionDTO.getAmount());
